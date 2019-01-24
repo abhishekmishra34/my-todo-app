@@ -87,4 +87,10 @@ public class DbHandler extends SQLiteOpenHelper {
                 });
         return true;
     }
+
+    public boolean deleteTask(int id){
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("DELETE FROM tasks WHERE id = ?", new String[]{String.valueOf(id)});
+        return true;
+    }
 }

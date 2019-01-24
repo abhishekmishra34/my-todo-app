@@ -1,6 +1,7 @@
 package com.example.user.mytodoapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
@@ -58,6 +59,36 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             textViewDesc = itemView.findViewById(R.id.textViewDesc);
             textViewFinishBy = itemView.findViewById(R.id.textViewFinishBy);
             textViewFinished = itemView.findViewById(R.id.textViewFinished);
+
+
+            itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setTitle("Delete");
+                    builder.setMessage("Are you sure you want to delete it?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            new DbHandler(context).deleteTask(taskList.get(getAdapterPosition()).getId());
+                            taskList = new DbHandler(context).getAllTask();
+
+                            notifyDataSetChanged();
+
+                        }
+                    });
+                    builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                        }
+                    });
+                    AlertDialog ad = builder.create();
+                    ad.show();
+
+                    return true;
+                }
+            });
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
