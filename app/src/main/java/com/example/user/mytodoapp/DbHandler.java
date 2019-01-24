@@ -70,4 +70,21 @@ public class DbHandler extends SQLiteOpenHelper {
 
         return taskList;
     }
+
+    public boolean updateTask(Task task) {
+        SQLiteDatabase db = getWritableDatabase();
+        db.execSQL("UPDATE tasks SET " +
+                        "title = ?, " +
+                        "description = ?, " +
+                        "finishBy = ?, " +
+                        "finished = ? WHERE id = ?;",
+                new String[]{
+                        task.getTitle(),
+                        task.getDesc(),
+                        task.getFinishBy(),
+                        String.valueOf(task.isFinished()),
+                        String.valueOf(task.getId())
+                });
+        return true;
+    }
 }

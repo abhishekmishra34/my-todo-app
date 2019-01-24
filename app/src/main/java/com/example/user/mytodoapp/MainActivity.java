@@ -25,8 +25,9 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new TaskAdapter(this);
+        recyclerView.setAdapter(adapter);
 
-        showTasks();
         findViewById(R.id.buttonAdd).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,19 +64,12 @@ public class MainActivity extends AppCompatActivity {
 
                 ad.dismiss();
 
+                adapter.notifyDataSetChanged();
+
+
             }
         });
 
-        showTasks();
-    }
-
-    private void showTasks(){
-        DbHandler db = new DbHandler(this);
-        List<Task> taskList = db.getAllTask();
-
-        adapter = new TaskAdapter(this, taskList);
-
-        recyclerView.setAdapter(adapter);
     }
 
 }

@@ -2,11 +2,15 @@ package com.example.user.mytodoapp;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -16,9 +20,9 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     private Context context;
     private List<Task> taskList;
 
-    public TaskAdapter(Context context, List<Task> taskList) {
+    public TaskAdapter(Context context) {
         this.context = context;
-        this.taskList = taskList;
+        taskList = new DbHandler(context).getAllTask();
     }
 
     @NonNull
@@ -54,6 +58,58 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
             textViewDesc = itemView.findViewById(R.id.textViewDesc);
             textViewFinishBy = itemView.findViewById(R.id.textViewFinishBy);
             textViewFinished = itemView.findViewById(R.id.textViewFinished);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Task task = taskList.get(getAdapterPosition());
+                    showTaskUpdateDialog(task);
+                }
+            });
+        }
+
+        private void showTaskUpdateDialog(final Task task) {
+            View view = LayoutInflater.from(context).inflate(R.layout.layout_update_task, null);
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setView(view);
+            final AlertDialog ad = builder.create();
+            ad.show();
+
+            final EditText editTextTitle = view.findViewById(R.id.editTextTitle);
+            final EditText editTextDesc = view.findViewById(R.id.editTextDesc);
+            final EditText editTextFinishBy = view.findViewById(R.id.editTextFinishBy);
+            final CheckBox checkBox = view.findViewById(R.id.checkBoxFinished);
+
+            editTextTitle.setText(task.getTitle());
+            editTextDesc.setText(task.getDesc());
+            editTextFinishBy.setText(task.getFinishBy());
+
+            view.findViewById(R.id.buttonUpdate).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    String title = editTextTitle.getText().toString().trim();
+                    String desc = editTextDesc.getText().toString().trim();
+                    String finishBy = editTextFinishBy.getText().toString().trim();
+
+                    boolean finished = checkBox.isChecked();
+
+                    Task taskUpdated = new Task(task.getId(), title, desc, finishBy, finished);
+
+                    DbHandler dbHandler = new DbHandler(context);
+                    dbHandler.updateTask(taskUpdated);
+
+                    Toast.makeText(context, "Task Updated", Toast.LENGTH_LONG).show();
+
+                    ad.dismiss();
+
+                    taskList = new DbHandler(context).getAllTask();
+
+                    notifyDataSetChanged();
+
+                }
+            });
+
         }
     }
 }
