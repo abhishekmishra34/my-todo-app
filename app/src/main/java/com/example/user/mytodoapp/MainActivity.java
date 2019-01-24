@@ -64,8 +64,8 @@ public class MainActivity extends AppCompatActivity {
 
                 ad.dismiss();
 
-                adapter.notifyDataSetChanged();
-
+                adapter = new TaskAdapter(MainActivity.this);
+                recyclerView.setAdapter(adapter);
 
             }
         });
